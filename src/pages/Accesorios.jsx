@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import AnimatedSection from "../utils/AnimatedSection"; 
 import { useSelectHero } from "../context/SelectHeroContext";
 import HomePath from "../components/ui/path/HomePath";
+import { useCart } from "../context/CartContext";
+import ShopPath from "../components/ui/path/ShopPath";
+import Encargos from "./Encargos";
 
 // Datos simulados de accesorios premium
 const accessoriesData = [
@@ -75,7 +78,11 @@ const accessoriesData = [
 
 const Accesorios = () => {
   //const navigate = useNavigate(); // Hook para manejar la navegación
-    const {  setSelectedHero } = useSelectHero();
+    const {  setSelectedHero ,setIsModalShop ,isModalShop} = useSelectHero();
+
+      const { addToCart, cart } = useCart();
+    
+   let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); // Calcular el total de artículos en el carrito
   
   const [selectedAccessory, setSelectedAccessory] = useState(null);
   const [filter, setFilter] = useState("all");
@@ -96,8 +103,17 @@ const Accesorios = () => {
       return 0;
     });
 
+
+    const openModal = () => {
+      setIsModalShop(true)
+    }; // Función para abrir el modal de la tienda
+  
+
+
   return (
-    <div className="min-h-screen bg-gradient-to-b bg-black to-[#141414] text-white py-12 px-4 sm:px-6 lg:px-8 relative">
+    <>
+    {!isModalShop?(
+      <div className="min-h-screen bg-gradient-to-b bg-black to-[#141414] text-white py-12 px-4 sm:px-6 lg:px-8 relative">
       {/* Botón para volver al inicio */}
      {/*  <button
         className="absolute top-4 left-4 bg-gold text-black px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition"
@@ -117,10 +133,31 @@ const Accesorios = () => {
      <HomePath /> {/* Icono de inicio */}
       </button>
 
+
+             {cart.length > 0 && (
+                    
+                    <div className="flex flex-row items-center">
+                    <button
+                      className="absolute top-4 right-4 bg-gold cursor-pointer px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition flex items-center"
+                      onClick={openModal}
+                    >
+                      <ShopPath /> {/* Icono del carrito */}
+                      {totalItems > 0 && (
+                        <span className="ml-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                          {totalItems}
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                    
+                    )}
+
+
+
       {/* Encabezado */}
       <AnimatedSection delay={0.2}>
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif mb-4 text-gold">Cátalogo Femeninos</h1>
+          <h1 className="text-4xl md:text-5xl font-serif mb-4 text-gold">Cátalogo Femenino</h1>
          {/*  <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Piezas exclusivas de alta relojería, joyería fina y accesorios de lujo.
           </p> */}
@@ -235,6 +272,9 @@ const Accesorios = () => {
         </div>
       )}
     </div>
+    )        : (<Encargos setIsModalShop={setIsModalShop} />)}
+
+    </>
   );
 };
 

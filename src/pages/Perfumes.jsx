@@ -8,6 +8,9 @@ import { useCart } from "../context/CartContext";
 import ShopPath from "../components/ui/path/ShopPath";
 import Encargos from "./Encargos";
 import { useProducts } from "../context/ProductsContext";
+import DetailProducto from "../components/cardDetail/DetailProducto";
+import ARow from "../components/ui/svg/ARow";
+import TwoRow from "../components/ui/svg/TwoRow";
 
 
 const Perfumes = () => {
@@ -18,6 +21,8 @@ const Perfumes = () => {
   const [sortBy, setSortBy] = useState("price");
 
   const [addShop, setAddShop] = useState(null); // Estado para el carrito
+
+  const [setselcetTypeRow, setSelcetTypeRow] = useState(2);
 
   const { addToCart, cart } = useCart();
 
@@ -55,14 +60,15 @@ const prevImage = () => {
 
   const openModal = () => {
     setIsModalShop(true)
-    console.log(isModalShop);
+  //  console.log(isModalShop);
   }; // Función para abrir el modal de la tienda
 
   // Filtrar y ordenar perfumes
+  
   const filteredPerfumes = perfumeData
     ?.filter((perfume) => {
       // Filtrar por origen si no es "all"
-      if (filter !== "all" && perfume.origin.toLowerCase() !== filter.toLowerCase()) {
+      if (filter !== "all" && perfume.brand.toLowerCase() !== filter.toLowerCase()) {
         return false;
       }
       // Filtrar por término de búsqueda
@@ -75,11 +81,16 @@ const prevImage = () => {
       // Ordenar por precio o nombre
       if (sortBy === "price") {
         return a.price - b.price; // Orden ascendente por precio
-      } else if (sortBy === "name") {
+      } else if (sortBy === "brand") {
         return a.name.localeCompare(b.name); // Orden alfabético por nombre
       }
       return 0;
     });
+
+
+    const handleSelectTypeRow = (type) => {
+      setSelcetTypeRow(type);
+    }
 
   const brands = [...new Set(perfumeData?.map((perfume) => perfume.brand))];
 
@@ -91,7 +102,15 @@ const prevImage = () => {
       {!isModalShop ? (
 
         <>
-          <div className="min-h-screen bg-gradient-to-b bg-black to-[#141414] text-white py-12 px-4 sm:px-6 lg:px-8">
+            {selectedPerfume ? (
+           <DetailProducto 
+           perfume={selectedPerfume} 
+           onClose={() => setSelectedPerfume(null)}
+           onAddToCart={handleAddToCart}
+         />
+            )
+          :(
+            <div className="min-h-screen bg-gradient-to-b bg-black to-[#141414] text-white py-12 px-4 sm:px-6 lg:px-8">
 
             <button
               className="absolute top-4  left-4 bg-gold cursor-pointer px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition"
@@ -136,25 +155,34 @@ const prevImage = () => {
 
                 <div className="flex flex-wrap items-center gap-4">
                   <select
-                    onChange={(e) => setFilter(e.target.value)}
+                    onChange={(e) => {
+                      setFilter(e.target.value), console.log(e.target.value,' select filter')
+                    }}
                     className="bg-black text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-gold"
                   >
-                    {console.log(filteredPerfumes, 'filter')}
-                    <option value="all">Todos los Perfumes</option>
+                 {/*    {console.log(filteredPerfumes, 'filter')}
+                  */}   <option value="all">Todas las Marcas</option>
                     {brands.map((brand) => (
                       <option key={brand} value={brand}>
                         {brand}
                       </option>
                     ))}
                   </select>
-
-                  <select
+           
+              <div className="flex flex-row justify-between w-full gap-4 ">
+              <select
                     onChange={(e) => setSortBy(e.target.value)}
                     className="bg-black text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-gold"
                   >
                     <option value="price">Ordenar por precio</option>
                     <option value="name">Ordenar por nombre</option>
                   </select>
+                  {setselcetTypeRow ===2 
+                  ? <button onClick={()=>handleSelectTypeRow(1)} > <ARow/> </button> 
+                  :  <button onClick={()=>handleSelectTypeRow(2)} > <TwoRow/> </button> }
+
+              </div>
+
                 </div>
 
                 <input
@@ -167,7 +195,7 @@ const prevImage = () => {
             </AnimatedSection>
 
             {/* Grid de perfumes */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className={`grid ${setselcetTypeRow === 2 ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
               {filteredPerfumes.map((perfume, index) => (
                 <AnimatedSection key={perfume.id} delay={0.1 * index}>
                   <PerfumeCard
@@ -179,126 +207,13 @@ const prevImage = () => {
             </div>
 
             {/* Modal de detalle */}
-            {selectedPerfume && (
-              <div
-                className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
-                onClick={() => setSelectedPerfume(null)}
-              >
-                <AnimatedSection delay={0}>
-                  <div
-                    className="bg-[#1d1d1d] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      className="absolute top-4 cursor-pointer right-4 text-gray-400 hover:text-white"
-                      onClick={() => setSelectedPerfume(null)}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-
-                    <div className="p-6">
-                      <div className="flex flex-col md:flex-row gap-6">
-
-                        <div className="md:w-1/2">
-                          <div className="bg-gray-800 rounded-lg h-64 md:h-80 flex items-center justify-center">
-                            {/* Imagen principal */}
-                            <img
-                              src={selectedPerfume.image[currentImageIndex]}
-                              alt={selectedPerfume.name}
-                              className="h-full w-full object-cover transition-opacity duration-300"
-                            />
-
-                            {/* Controles del slider */}
-                            <div className="absolute left-0 right-0 flex justify-center gap-2">
-                              {selectedPerfume.image.map((_, index) => (
-                                <button
-                                  key={index}
-                                  onClick={() => setCurrentImageIndex(index)}
-                                  className={`w-3 h-3 rounded-full mt-40 ${currentImageIndex === index ? 'bg-gold' : 'bg-gray-500'}`}
-                                  aria-label={`Ir a imagen ${index + 1}`}
-                                />
-                              ))}
-
-                              {/* Flechas de navegación */}
-                              {selectedPerfume.image.length > 1 && (
-                                <>
-                                  <button
-                                    onClick={prevImage}
-                                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70"
-                                    aria-label="Imagen anterior"
-                                  >
-                                    &lt;
-                                  </button>
-                                  <button
-                                    onClick={nextImage}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70"
-                                    aria-label="Siguiente imagen"
-                                  >
-                                    &gt;
-                                  </button>
-                                </>
-                              )}
-
-                            </div>
-                          </div>
-                        </div>
-                       
-                        <div className="md:w-1/2">
-                          <h2 className="text-2xl font-serif text-gold mb-2">{selectedPerfume.name}</h2>
-                          <p className="text-xl font-bold mb-6">${selectedPerfume.price}</p>
-
-                          <p className="text-gray-400 mb-4">{selectedPerfume.brand} • {selectedPerfume.origin}</p>
-                          {console.log(selectedPerfume, 'selectedPerfume')}
-                          <div className="mb-6">
-                            <h3 className="text-lg font-semibold mb-2">Descripción</h3>
-                            <p className="text-gray-300">Notas : {selectedPerfume.notes}</p>
-
-                            <p className="text-gray-300">Corazón : {selectedPerfume.corazon}</p>
-                            <p className="text-gray-300">Base : {selectedPerfume.base}</p>
-                          </div>
-
-                          <button
-                            onClick={() => handleAddToCart(selectedPerfume)} // Agregar al carrito
-                            className="w-full bg-gray-100 cursor-pointer text-black py-3 rounded-lg font-bold hover:bg-opacity-90 transition"
-                          >
-                            Añadir al carrito
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {addShop && (
-                    <div className="fixed inset-0  bg-opacity-90 flex items-start justify-center z-50 pt-16">
-                      <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4 flex items-center animate-fade-in">
-                        <div className="bg-green-100 p-3 rounded-full mr-4">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-8 w-8 text-green-600"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                        <div className="text-left">
-                          <h3 className="font-semibold text-gray-900">Producto añadido</h3>
-                          <p className="text-sm text-gray-600">Se ha agregado correctamente al carrito</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                </AnimatedSection>
-              </div>
-            )}
+        
 
        
 
           </div>
+          )}
+          
         </>
 
       )
@@ -316,7 +231,7 @@ const prevImage = () => {
 const PerfumeCard = ({ perfume, onClick }) => {
   return (
     <div
-      className="bg-[#1d1d1d] rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col h-full"
+      className="bg-[#1d1d1d] rounded-sm overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col h-full"
       onClick={onClick}
     >
       {/* Contenedor de la imagen - relación de aspecto 1:1 */}
@@ -331,15 +246,28 @@ const PerfumeCard = ({ perfume, onClick }) => {
         />
         {/* Capa oscura para mejorar contraste */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+       {/* Contenedor del nombre con fondo semitransparente */}
+       <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/60">
+          <h3 className="text-white text-lg font-semibold line-clamp-1">{perfume.name}</h3>
+        </div>
       </div>
       
-      {/* Contenido de la tarjeta */}
-      <div className="p-4 bg-[#2c2b2bb8] flex-grow flex flex-col">
+ </div>
+  );
+};
+
+export default Perfumes;
+
+
+
+/* 
+      /* Contenido de la tarjeta */
+     /*  <div className="p-4 bg-[#2c2b2b25] flex-grow flex flex-col">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-semibold line-clamp-1">{perfume.name}</h3>
           <span className="text-yellow-500 font-bold whitespace-nowrap">${perfume.price}</span>
         </div>
-        <p className="text-gray-400 text-sm mb-3">{perfume.brand} • {perfume.origin}</p>
+         <p className="text-gray-400 text-sm mb-3">{perfume.brand} • {perfume.origin}</p>
         <div className="mt-auto">
           <button 
             className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full transition"
@@ -352,8 +280,4 @@ const PerfumeCard = ({ perfume, onClick }) => {
           </button>
         </div>
       </div>
-    </div>
-  );
-};
-
-export default Perfumes;
+    */

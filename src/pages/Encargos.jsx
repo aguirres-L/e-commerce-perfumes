@@ -2,6 +2,7 @@ import { useState } from 'react';
 import BackPath from "../components/ui/path/BackPath";
 import { useCart } from "../context/CartContext";
 import AnimatedSection from "../utils/AnimatedSection";
+import { addDocumentFirebase } from '../firebase/data-firebase';
 
 const Encargos = ({ setIsModalShop }) => {
   const { 
@@ -39,7 +40,7 @@ const Encargos = ({ setIsModalShop }) => {
 
   const handlePayment = () => {
     const today = new Date();
-    const formattedDate = today.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+    const formattedDate = today.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year:  'numeric' });
     const orderData = {
       buyerInfo,
       cart,
@@ -49,8 +50,8 @@ const Encargos = ({ setIsModalShop }) => {
     };
     // Implementa aquí la lógica para enviar orderData a Firebase.
      // Aquí iría tu lógica para enviar a Firebase
-  console.log('Compra procesada:', orderData);
-    
+  //console.log('Compra procesada:', orderData);
+  addDocumentFirebase('orders', orderData)
   // Mostrar confirmación
   setIsOrderConfirmed(true);
   // Limpiar el carrito después de 3 segundos
@@ -58,7 +59,7 @@ const Encargos = ({ setIsModalShop }) => {
     clearCart();
     setIsOrderConfirmed(false);
     setIsModalShop(false);
-  }, 4100);
+  }, 4600);
   };
 
   return (
@@ -114,7 +115,7 @@ const Encargos = ({ setIsModalShop }) => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-md overflow-hidden">
                           <img 
-                            src={item.image || '/placeholder-product.jpg'} 
+                            src={item.image[0] || '/placeholder-product.jpg'} 
                             alt={item.name}
                             className="w-full h-full object-cover"
                           />
@@ -153,6 +154,7 @@ const Encargos = ({ setIsModalShop }) => {
                   ))}
                 </ul>
                 
+
                 <div className="px-6 py-4 border-t border-gray-300 bg-gray-50 flex justify-end">
                   <button
                     onClick={clearCart}
@@ -274,7 +276,7 @@ const Encargos = ({ setIsModalShop }) => {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
       </svg>
       <h3 className="text-2xl font-bold text-gray-900 mb-2">¡Pedido Confirmado!</h3>
-      <p className="text-gray-600 mb-6">Hemos recibido tu pedido correctamente. Te enviaremos las instrucciones de pago por WhatsApp.</p>
+      <p className="text-gray-600 mb-6">Hemos recibido tu pedido correctamente. Nuestro equipo de Ventas se comunicara por WhatsApp.</p>
       <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900 mx-auto"></div>
       <p className="text-sm text-gray-500 mt-4">Redirigiendo...</p>
     </div>

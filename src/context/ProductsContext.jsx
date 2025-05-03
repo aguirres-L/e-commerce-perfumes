@@ -34,7 +34,7 @@ export const ProductsProvider = ({ children }) => {
       setError("Error al reservar");
     }
   };
-  if(products)console.log("products", products);
+  //if(products)console.log("products", products);
   
 
   return (
