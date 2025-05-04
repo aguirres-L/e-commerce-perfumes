@@ -33,17 +33,7 @@ const Perfumes = () => {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-const nextImage = () => {
-  setCurrentImageIndex((prevIndex) => 
-    prevIndex === selectedPerfume.image.length - 1 ? 0 : prevIndex + 1
-  );
-};
-
-const prevImage = () => {
-  setCurrentImageIndex((prevIndex) => 
-    prevIndex === 0 ? selectedPerfume.image.length - 1 : prevIndex - 1
-  );
-};
+ 
   
   // Función para manejar el clic en "Añadir al carrito"
   const handleAddToCart = (product) => {
@@ -63,9 +53,17 @@ const prevImage = () => {
   //  console.log(isModalShop);
   }; // Función para abrir el modal de la tienda
 
+
+  
+  const filteredPerfumesMasculino = perfumeData.filter(perfume => 
+    perfume.genero === "unisex" || perfume.genero === "masculino"
+  );
+  
+  console.log(filteredPerfumesMasculino, 'perfumes filtrados (unisex y masculino)');
+   
   // Filtrar y ordenar perfumes
   
-  const filteredPerfumes = perfumeData
+  const filteredPerfumes = filteredPerfumesMasculino
     ?.filter((perfume) => {
       // Filtrar por origen si no es "all"
       if (filter !== "all" && perfume.brand.toLowerCase() !== filter.toLowerCase()) {
@@ -92,7 +90,8 @@ const prevImage = () => {
       setSelcetTypeRow(type);
     }
 
-  const brands = [...new Set(perfumeData?.map((perfume) => perfume.brand))];
+
+  const brands = [...new Set(filteredPerfumesMasculino?.map((perfume) => perfume.brand))];
 
   return (
 

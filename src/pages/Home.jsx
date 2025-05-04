@@ -4,14 +4,19 @@ import { useSelectHero } from "../context/SelectHeroContext";
 import imgPerfumesMujer from "../assets/2perf-mujer.jpg"
 
 import imgPerfumesHombre from "../assets/new.2.2.jpg";
+
+
+import logoMujer from "../assets/logo-mujer2.jpg";
+import logoHombre from "../assets/logo-hombre.webp";
+
 /* const HERO_IMAGES = {
   perfumes: 'https://firebasestorage.googleapis.com/v0/b/verdu-shop.appspot.com/o/hero%2Fsxss.png?alt=media&token=ba205acd-b1cd-4130-9246-aadfe1e52bde',
   accessories: 'https://firebasestorage.googleapis.com/v0/b/verdu-shop.appspot.com/o/hero%2Frelojs.png?alt=media&token=44d60f78-4bca-4f10-a3f2-2f34bcbe2e7b'
 };
  */
 const HERO_IMAGES = {
-  perfumes: imgPerfumesHombre,
-  accessories:imgPerfumesMujer
+  perfumes: logoHombre,
+  accessories:logoMujer
 };
 
 

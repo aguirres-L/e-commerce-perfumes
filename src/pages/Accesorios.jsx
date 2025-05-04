@@ -5,6 +5,10 @@ import HomePath from "../components/ui/path/HomePath";
 import { useCart } from "../context/CartContext";
 import ShopPath from "../components/ui/path/ShopPath";
 import Encargos from "./Encargos";
+import { useProducts } from "../context/ProductsContext";
+import ARow from "../components/ui/svg/ARow";
+import TwoRow from "../components/ui/svg/TwoRow";
+import DetailProducto from "../components/cardDetail/DetailProducto";
 
 // Datos simulados de accesorios premium
 const accessoriesData = [
@@ -80,6 +84,10 @@ const Accesorios = () => {
   //const navigate = useNavigate(); // Hook para manejar la navegación
     const {  setSelectedHero ,setIsModalShop ,isModalShop} = useSelectHero();
 
+  const { products, loading, error, reserveProduct, refreshProducts } = useProducts();
+  let perfumeData = products; // Asignar productos a perfumeData
+
+
       const { addToCart, cart } = useCart();
     
    let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0); // Calcular el total de artículos en el carrito
@@ -88,6 +96,8 @@ const Accesorios = () => {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("price");
+    const [selectedPerfume, setSelectedPerfume] = useState(null);
+    const [setselcetTypeRow, setSelcetTypeRow] = useState(2);
   
   const filteredAccessories = accessoriesData
     .filter(accessory => {
@@ -103,6 +113,56 @@ const Accesorios = () => {
       return 0;
     });
 
+    const filteredPerfumesFemenino = perfumeData.filter(perfume => 
+      perfume.genero === "unisex" || perfume.genero === "femenino"
+    );
+    
+    console.log(filteredPerfumesFemenino, 'perfumes filtrados (unisex y femenino)');
+    
+ // Función para manejar el clic en "Añadir al carrito"
+ const handleAddToCart = (product) => {
+  try {
+    addToCart(product); // Agregar el producto al carrito
+    setAddShop(true);
+    setTimeout(() => {
+      setAddShop(false);
+    }, 3000); // Aumenta el tiempo a 3000 ms (3 segundos)
+  } catch (error) {
+    console.error("Error al añadir al carrito:", error); 
+  }
+};
+     const filteredPerfumes = filteredPerfumesFemenino
+    ?.filter((perfume) => {
+      // Filtrar por origen si no es "all"
+      if (filter !== "all" && perfume.brand.toLowerCase() !== filter.toLowerCase()) {
+        return false;
+      }
+      // Filtrar por término de búsqueda
+      if (searchTerm && !perfume.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      // Ordenar por precio o nombre
+      if (sortBy === "price") {
+        return a.price - b.price; // Orden ascendente por precio
+      } else if (sortBy === "brand") {
+        return a.name.localeCompare(b.name); // Orden alfabético por nombre
+      }
+      return 0;
+    });
+
+
+    const handleSelectTypeRow = (type) => {
+      setSelcetTypeRow(type);
+    }
+
+      
+// Asumiendo que filteredPerfumesFemenino es un array de objetos como el que muestras
+  const brands = [...new Set(filteredPerfumesFemenino?.map((perfume) => perfume.brand))];
+
+    console.log(brands,'brands')
 
     const openModal = () => {
       setIsModalShop(true)
@@ -110,10 +170,21 @@ const Accesorios = () => {
   
 
 
+
+
   return (
     <>
     {!isModalShop?(
-      <div className="min-h-screen bg-gradient-to-b bg-black to-[#141414] text-white py-12 px-4 sm:px-6 lg:px-8 relative">
+
+<>
+{selectedPerfume ? (
+<DetailProducto 
+perfume={selectedPerfume} 
+onClose={() => setSelectedPerfume(null)}
+onAddToCart={handleAddToCart}
+/>
+)
+:(<div className="min-h-screen bg-gradient-to-b bg-black to-[#141414] text-white py-12 px-4 sm:px-6 lg:px-8 relative">
       {/* Botón para volver al inicio */}
      {/*  <button
         className="absolute top-4 left-4 bg-gold text-black px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition"
@@ -164,51 +235,62 @@ const Accesorios = () => {
         </div>
       </AnimatedSection>
 
-      {/* Filtros */}
-      <AnimatedSection delay={0.4}>
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <div className="flex flex-wrap items-center gap-4">
-            <select 
-              onChange={(e) => setFilter(e.target.value)}
-              className="bg-black text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-gold"
-            >
-              <option value="all">Todas las categorías</option>
-              <option value="relojes">Relojes</option>
-              <option value="joyeria">Joyeria</option>
-              <option value="bolsos">Bolsos</option>
-              <option value="accesorios">Otros accesorios</option>
-            </select>
+       {/* Filtros con AnimatedSection */}
+       <AnimatedSection delay={0.4}>
+              <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
 
-            <select 
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-black text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-gold"
-            >
-              <option value="price">Ordenar por precio</option>
-              <option value="name">Ordenar por nombre</option>
-              <option value="new">Novedades primero</option>
-            </select>
-          </div>
+                <div className="flex flex-wrap items-center gap-4">
+                  <select
+                    onChange={(e) => {
+                      setFilter(e.target.value), console.log(e.target.value,' select filter')
+                    }}
+                    className="bg-black text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-gold"
+                  >
+                 {/*    {console.log(filteredPerfumes, 'filter')}
+                  */}   <option value="all">Todas las Marcas</option>
+                    {brands.map((brand) => (
+                      <option key={brand} value={brand}>
+                        {brand}
+                      </option>
+                    ))}
+                  </select>
+           
+              <div className="flex flex-row justify-between w-full gap-4 ">
+              <select
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="bg-black text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-gold"
+                  >
+                    <option value="price">Ordenar por precio</option>
+                    <option value="name">Ordenar por nombre</option>
+                  </select>
+                  {setselcetTypeRow ===2 
+                  ? <button onClick={()=>handleSelectTypeRow(1)} > <ARow/> </button> 
+                  :  <button onClick={()=>handleSelectTypeRow(2)} > <TwoRow/> </button> }
 
-          <input
-            type="text"
-            placeholder="Buscar accesorios..."
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-black text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-gold w-full md:w-64"
-          />
-        </div>
-      </AnimatedSection>
+              </div>
 
-      {/* Grid de accesorios */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredAccessories.map((accessory, index) => (
-          <AnimatedSection key={accessory.id} delay={0.1 * index}>
-            <AccessoryCard 
-              accessory={accessory}
-              onClick={() => setSelectedAccessory(accessory)}
-            />
-          </AnimatedSection>
-        ))}
-      </div>
+                </div>
+
+                <input
+                  type="text"
+                  placeholder="Buscar perfumes..."
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-black text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-gold w-full md:w-64"
+                />
+              </div>
+            </AnimatedSection>
+
+        {/* Grid de perfumes */}
+        <div className={`grid ${setselcetTypeRow === 2 ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
+              {filteredPerfumes.map((perfume, index) => (
+                <AnimatedSection key={perfume.id} delay={0.1 * index}>
+                  <PerfumeCard
+                    perfume={perfume}
+                    onClick={() => setSelectedPerfume(perfume)}
+                  />
+                </AnimatedSection>
+              ))}
+            </div>
 
       {/* Modal de detalle */}
       {selectedAccessory && (
@@ -271,15 +353,44 @@ const Accesorios = () => {
           </AnimatedSection>
         </div>
       )}
-    </div>
+    </div>)}
+    </>
+
     )        : (<Encargos setIsModalShop={setIsModalShop} />)}
 
     </>
   );
 };
-
+// Componente de tarjeta de perfume (sin animaciones propias)
+const PerfumeCard = ({ perfume, onClick }) => {
+  return (
+    <div
+      className="bg-[#1d1d1d] rounded-sm overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col h-full"
+      onClick={onClick}
+    >
+      {/* Contenedor de la imagen - relación de aspecto 1:1 */}
+      <div className="relative pt-[100%] overflow-hidden"> {/* Mantiene relación cuadrada */}
+        <img
+          src={perfume.image[0]}
+          alt={perfume.name}
+          className="absolute top-0 left-0 w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = 'https://via.placeholder.com/300x300?text=Perfume+Image';
+          }}
+        />
+        {/* Capa oscura para mejorar contraste */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+       {/* Contenedor del nombre con fondo semitransparente */}
+       <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/60">
+          <h3 className="text-white text-lg font-semibold line-clamp-1">{perfume.name}</h3>
+        </div>
+      </div>
+      
+ </div>
+  );
+};
 // Componente de tarjeta de accesorio
-const AccessoryCard = ({ accessory, onClick }) => {
+/* const AccessoryCard = ({ accessory, onClick }) => {
   return (
     <div
       className="bg-[#1d1d1d] rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer relative"
@@ -314,6 +425,6 @@ const AccessoryCard = ({ accessory, onClick }) => {
       </div>
     </div>
   );
-};
+}; */
 
 export default Accesorios;
