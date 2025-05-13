@@ -3,12 +3,15 @@ import ImagenDetail from './ImagenDetail';
 import Left from '../ui/svg/Left';
 import Rigth from '../ui/svg/Rigth';
 import { useCart } from '../../context/CartContext';
+import { useBackButtonClose } from './useBackButtonClose';
 
 const DetailProducto = ({ perfume, onClose, onAddToCart }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [addShop, setAddShop] = useState(false);
   const [showImageDetail, setShowImageDetail] = useState(false);
   const { addToCart, cart } = useCart();
+
+  useBackButtonClose(onClose, true);
 
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => 

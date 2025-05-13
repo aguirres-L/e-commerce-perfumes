@@ -46,7 +46,7 @@ const Encargos = ({ setIsModalShop }) => {
       cart,
       totalPrice,
       fecha: formattedDate, // Fecha en formato humanizado (ej: "11 de abril de 2025")
-      estado: false // Estado inicial
+      estado: 'pendiente' // Estado inicial
     };
     // Implementa aquí la lógica para enviar orderData a Firebase.
      // Aquí iría tu lógica para enviar a Firebase
