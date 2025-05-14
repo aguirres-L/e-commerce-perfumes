@@ -11,6 +11,7 @@ import { useProducts } from "../context/ProductsContext";
 import DetailProducto from "../components/cardDetail/DetailProducto";
 import ARow from "../components/ui/svg/ARow";
 import TwoRow from "../components/ui/svg/TwoRow";
+import { useBackButtonClose } from "../components/cardDetail/useBackButtonClose";
 
 
 const Perfumes = () => {
@@ -33,8 +34,9 @@ const Perfumes = () => {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
- 
-  
+  // Hook para ir al Home con el botón atrás, solo si no hay modal ni carrito abierto
+  useBackButtonClose(() => setSelectedHero(""), !isModalShop && !selectedPerfume);
+
   // Función para manejar el clic en "Añadir al carrito"
   const handleAddToCart = (product) => {
     try {
@@ -194,7 +196,7 @@ const Perfumes = () => {
             </AnimatedSection>
 
             {/* Grid de perfumes */}
-            <div className={`grid ${setselcetTypeRow === 2 ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
+            <div className={`grid ${setselcetTypeRow === 2 ? 'grid-cols-2' : 'grid-cols-1'} md:grid-cols-3 lg:grid-cols-4 gap-6`}>
               {filteredPerfumes.map((perfume, index) => (
                 <AnimatedSection key={perfume.id} delay={0.1 * index}>
                   <PerfumeCard
@@ -205,9 +207,9 @@ const Perfumes = () => {
               ))}
             </div>
 
+
             {/* Modal de detalle */}
         
-
        
 
           </div>
@@ -230,28 +232,27 @@ const Perfumes = () => {
 const PerfumeCard = ({ perfume, onClick }) => {
   return (
     <div
-      className="bg-[#1d1d1d] rounded-sm overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col h-full"
+      className="bg-[#1d1d1d] rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col h-full md:hover:scale-105 md:transition-transform"
       onClick={onClick}
     >
       {/* Contenedor de la imagen - relación de aspecto 1:1 */}
-      <div className="relative pt-[100%] overflow-hidden"> {/* Mantiene relación cuadrada */}
+      <div className="relative pt-[100%] overflow-hidden">
         <img
           src={perfume.image[0]}
           alt={perfume.name}
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full object-cover rounded-t-lg"
           onError={(e) => {
             e.target.src = 'https://via.placeholder.com/300x300?text=Perfume+Image';
           }}
         />
-        {/* Capa oscura para mejorar contraste */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-       {/* Contenedor del nombre con fondo semitransparente */}
-       <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/60">
+        <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/60">
           <h3 className="text-white text-lg font-semibold line-clamp-1">{perfume.name}</h3>
         </div>
       </div>
+      {/* Contenido de la tarjeta */}
       
- </div>
+    </div>
   );
 };
 

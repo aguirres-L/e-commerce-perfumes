@@ -65,7 +65,14 @@ const ImagenDetail = ({ images, currentIndex = 0, onClose }) => {
             <button
               key={index}
               onClick={() => setCurrentImageIndex(index)}
-              className={`w-3 h-3 rounded-full ${currentImageIndex === index ? 'bg-gold' : 'bg-gray-500'}`}
+              className={`
+                rounded-full
+                transition-all duration-300
+                ${currentImageIndex === index
+                  ? 'bg-gold w-8 h-3 shadow-lg'
+                  : 'bg-gray-300 w-3 h-3 opacity-80'
+                }
+              `}
               aria-label={`Ir a imagen ${index + 1}`}
             />
           ))}
