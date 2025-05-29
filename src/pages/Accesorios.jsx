@@ -200,7 +200,7 @@ onAddToCart={handleAddToCart}
       </button> */}
 
       <button
-        className="absolute cursor-pointer hover:shadow-orange-50 top-4 ms:left-4 md:right-4 bg-gold px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition"
+        className="absolute cursor-pointer hover:shadow-orange-50 top-4 ms:left-4 md:left-4 bg-gold px-4 py-2 rounded-lg font-bold hover:bg-opacity-90 transition"
         onClick={() => {
           setSelectedHero(""); // Resetear el héroe seleccionado
         }}
@@ -390,7 +390,7 @@ const PerfumeCard = ({ perfume, onClick }) => {
         </div>
       </div>
       {/* Contenido de la tarjeta */}
-      <div className="p-4 flex flex-col flex-1">
+   {/*    <div className="p-4 flex flex-col flex-1">
         <div className="flex justify-between items-center mb-2">
           <span className="text-yellow-500 font-bold whitespace-nowrap text-base md:text-lg">${perfume.price}</span>
           <span className="text-gray-400 text-xs md:text-sm">{perfume.brand}</span>
@@ -406,7 +406,7 @@ const PerfumeCard = ({ perfume, onClick }) => {
             Ver más
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

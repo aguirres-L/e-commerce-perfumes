@@ -62,6 +62,8 @@ const Encargos = ({ setIsModalShop }) => {
   }, 4600);
   };
 
+  console.log(cart);
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 py-12 px-4 sm:px-6 lg:px-8 relative">
       {/* Botón para volver atrás */}
@@ -141,7 +143,7 @@ const Encargos = ({ setIsModalShop }) => {
                           </select>
                           
                           <button
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => removeFromCart(item.idFirestore)}
                             className="text-gray-500 hover:text-gray-700 transition-colors"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -154,7 +156,7 @@ const Encargos = ({ setIsModalShop }) => {
                   ))}
                 </ul>
                 
-
+{/* vaciar carrito */}
                 <div className="px-6 py-4 border-t border-gray-300 bg-gray-50 flex justify-end">
                   <button
                     onClick={clearCart}
@@ -166,6 +168,8 @@ const Encargos = ({ setIsModalShop }) => {
                     Vaciar carrito
                   </button>
                 </div>
+
+
               </div>
             </div>
 
@@ -179,14 +183,14 @@ const Encargos = ({ setIsModalShop }) => {
                 <div className="px-6 py-4 space-y-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal ({totalItems} items)</span>
-                    <span className="font-medium">${totalPrice.toFixed(2)}</span>
+                    <span className="font-medium">${totalPrice.toFixed(3)}</span>
                   </div>
                   
-                  <div className="flex justify-between">
+                  {/* <div className="flex justify-between">
                     <span className="text-gray-600">Envío</span>
                     <span className="font-medium">Tarifa Uber</span>
                   </div>
-                  
+                   */}
                   {/* <div className="flex justify-between">
                     <span className="text-gray-600">Impuestos</span>
                     <span className="font-medium">$0.00</span>

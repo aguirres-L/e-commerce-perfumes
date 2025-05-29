@@ -48,7 +48,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (productId) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== productId));
+    setCart(prevCart => prevCart.filter(item => item.idFirestore !== productId));
   };
 
   const updateQuantity = (productId, newQuantity) => {
